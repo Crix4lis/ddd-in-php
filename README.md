@@ -7,4 +7,9 @@ written by *CARLOS BUENOSVINOS*, *CHRISTIAN SORONELLAS* and *KEYVAN AKBARY*:
 
 ![DOMAIIN-DRIVEN DESIGN IN PHP COVER](https://images.gr-assets.com/books/1537792285l/32284709.jpg)
 
-<br><br>[Domain Driven Design In PHP code snip sets](https://github.com/dddinphp)
+## Book's code snip sets
+[Domain Driven Design In PHP code snip sets (GitHub)](https://github.com/dddinphp)
+
+## Mentioned books (I decided to point out)
+- [Applying Domain Driven Design Patterns by Jimmy Nilsson](https://www.amazon.com/Applying-Domain-Driven-Design-Patterns-Examples/dp/0321268202)<br>
+- [Introducing Eventstorming by Alberto Brandolini](https://leanpub.com/introducing_eventstorming)<br>
