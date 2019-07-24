@@ -1,5 +1,57 @@
 # CHAPTER 2: ARCHITECTURE STYLES
 
+## Layered architecture - to split up concepts, create layers for each different concern
+From top to bottom (higher abstraction to lower)
+1. LAYER: USER INTERFACE - encapsulates orchestration of all following layers
+2. LAYER: APPLICATION AND DOMAIN - encapsulates data access and manipulation
+3. LAYER: INFRASTRUCTURE - handle infrastructure concerns
+
+In Layered Architecture each layer must be tightly coubled with the layers **beneath** it. The core idea is that
+it **does separate different components and concerns** of an application. It's the same concept as with MVC
+architecture, actually it follows those rules (MVC one example of layared achitecture)
+
+## Hexagonal Architecture (ports and adapters) - exposes requirements such as blogs, static pages, and so on
+To create Hexagonal Architecture you must Invert dependencies which means that core layer must be unaware of
+infrastructural concerns. You only need follow Dependency Inversion Principle.
+
+> Dependency Inversion Principle (DIP)<br>
+High-level modules should not depend on low-level modules.
+Both should depend on abstractions. Abstractions should not depend on details. Details should depend on abstractions.
+
+If you extort interfaces in domain layer (for example for infrastructure), that domain becomes unaware of
+infrastructure implementation. Hexagonal architecture "talks" in terms **outside** and **inside** rather than
+**lower** or **higher**. Everything that wants to come **inside** (like external application via API
+or data from datastorage) must come inside via exorted port (which lays "inside") throught adapter (which lays
+"outiside" and is an implementation of that port and encapsulates implementation details from outside word
+(like ralational database or api calls)
+
+**Port**<br>
+```php
+interface RealRepository
+{
+    public function byId(RealSthId $id);
+    public function add(RealSth $entity);
+}
+```
+**Adapter**<br>
+```php
+class PDORealRepository implements RealRepository
+{
+    private $db;
+    public function __construct(PDO $db) { ... }
+    ...
+}
+```
+**Core layer**<br>
+```php
+class RealService
+{
+    private $repo;
+    /** this is it! you "inject" interface instead of real class */
+    public function __construct(RealRepository $repo) { ... }
+}
+```
+
 ## CQRS - to expose aggregate details to the different clients
 It separates queries which only can read current state of a model (Read model) from
 commands which only can change state of a model (Write model)
@@ -370,41 +422,6 @@ pain in the ass
 to production you cannot "undo" code to previous version because that code might not be able to handle already stored
 events in database. So you need to "undo" the database itself and loose all the data. Am I correct? 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-## Hexagonal Architecture (ports and adapters) - exposes requirements such as blogs, static pages, and so on
-  
-## Layred architecture
-From top to bottom (higher abstraction to lower)
-- USER INTERFACE LAYER - orchestrates application & domain layer
-- APPLICATION LAYER - encapsulates domain and data access
-- DOMAIN LAYER - encapsulates domain and data access
-- INFRASTRUCTURE LAYER - encapsulates infrastructure concerns
-
-    Higher layer (for ex. interface layer) can always bypass lower layer or layers (for ex. app layer
-    or/and domain layer) but NEVER lower layer can call higher layer!
-- Model-View-Controller
-
-## Projection 
-
-## Dependency Inversion Principle (DIP)
-High-level modules hould not depend on low-level modules.
-Both should depend on abstractions. Abstractions should not depend on details. Details should depend on abstractions.
-
-___
+---
 \* - *inserts* - is in quotes because it doesn't need to be relational database, but i wanted to point out that
 in this apporach you cannot do other operation on database other than add or create new record or document
