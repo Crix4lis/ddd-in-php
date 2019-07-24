@@ -95,14 +95,6 @@ which then can publish domain events
     }
     ```
     
-#### Conclusion
-- domain events **can be** instantiated directly from within aggregates themself
-- aggregate state **must be** changed only via domain events: `$this->id = $event->getId();`
-- methods that represent business logic model state change **do not** directly change aggregates state.
-They do it via domain events (which they can freely create)
-- **only** methods that represent business logic model state change **can and must be** `public`
-- all other methods **must be** `protected` or `private` and be hidden from aggregate's client code
-
 ### Read Model
 All read concerns are treated as reporting processes, an infrastructure concert. In genera, when using CQRS, the Read
 Model is subject to the needs of the UI and how complex the views compounding the UI are. It means query is on
@@ -110,8 +102,74 @@ infrastructure layer (in Hexagonal Architecture). **It does not need object-rela
 an overkill.
 
 ### Synchronizing Read and Write models
+- Read models is synchronized with Write model by **capturing domain events** throw by write model.
+- For **each domain event** there must be executed specific projection
+- There can be different kinds of projections depending on infrastructure. For example there can be
+  Elasticsearch projection
 
+Projection interface:
+```php
+interface Projection
+{
+    public function listensTo();
+    public function project(Event $e);
+}
+```
 
+**Elasticsearch** projection for **PostWasCreated** event
+```php
+namespace Infrastructure\...
+
+class PostWasCreatedProjection implements Projection
+{
+    private $client;
+    
+    public function __construct(Client $client) {$this->client = $client;}
+    public function listensTo() {return PostWasCreated::class;}
+    
+    public function project(Event $e)
+    {
+        $this->client->index([
+            'index' => 'posts',
+            'type' => 'post',
+            'id' => $e->getPostId(),
+            'body' => [
+                'content' => $e->getPostContent(),
+                ...
+            ]
+        ]);
+    }
+}
+``` 
+**Projector (observer)** - this is the place where Messaging system could be used
+```php
+namespace Infrastructure...
+
+class Projector {
+    private $projections = [];
+    public function register(array $projections) { ... }
+    public function project(Event[] $events) { ... }
+}
+```
+
+#### Summarization and conclusion
+- CQRS is made from:
+    - Write model (aggregate itself)
+    - Read model (direct query to data storage)
+    - Synchronization read and write model:
+        - projection (per event)
+        - projector (event listener / observer)
+- write model:
+    - domain events **can be** instantiated directly from within aggregates themself
+    - aggregate state **must be** changed only via domain events: `$this->id = $event->getId();`
+    - methods that represent business logic model state change **do not** directly change aggregates state.
+    They do it via domain events (which they can freely create)
+    - **only** methods that represent business logic model state change **can and must be** `public`
+    - all other methods **must be** `protected` or `private` and be hidden from aggregate's client code
+- synchronization:
+    - projector is a kind of **domain event listener**
+    - projection is subject (in terms of observer pattern)
+    - projector is the place where you can use RabbitMQ if you desire asynchronous behaviour
 
 
 
@@ -147,6 +205,7 @@ From top to bottom (higher abstraction to lower)
     or/and domain layer) but NEVER lower layer can call higher layer!
 - Model-View-Controller
 
+## Projection 
 
 ## Dependency Inversion Principle (DIP)
 High-level modules hould not depend on low-level modules.
