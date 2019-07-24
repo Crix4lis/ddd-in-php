@@ -171,26 +171,220 @@ class Projector {
     - projection is subject (in terms of observer pattern)
     - projector is the place where you can use RabbitMQ if you desire asynchronous behaviour
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 ## Event Sourcing - to track all the different operations
+The fundamental idea behind Event Sourcing is to express the state of Aggregates as a linear sequence of events.
+In ES there is not such operation on database as UPDATE TABLE..., **only INSERT** operations are supported.
+To increase performance it's good to take snapshot of an aggregate state and replay only the events in the event stream
+that occured after the snapshot was taken.
+
+**Event sourced aggregate**
+```php
+interface EventSourcedAggregateRoot
+{
+    public static function reconstitute(EventStream $events);
+}
+```
+```php
+/** keep in mind that AggregateRoot class is the same like it was in CQRS */
+class RealAggregateRoot extends AggregateRoot implements EventSourcedAggregateRoot
+{
+    public static function reconstitute(EventStram $history)
+    {
+        $aggregate = new static($history->getAggregateId());
+        
+        foreach ($events as $e) {
+            $aggregate->applyThat($e);
+        }
+        
+        return $aggregate;
+    }
+}
+```
+
+To create such `ConcreteAggregate` there must be created **adapter** for a repository in infrastructure layer.
+Let's assume we already have `AggregateInterface`
+```php
+class EventStorePostRepository implements AggregateRepository
+{
+    private $eventStore, $projector;
+    public function __construct($eventStore, $projector) { ... }
+    
+    /** it saves current state (in application layer) to the actual database (by $eventStore) */
+    public function save(ConcreteAggregate $aggregate)
+    {
+        $events = $aggregate->recordedEvents();
+        
+        $this->eventStore->append(new EventStream($aggregate->id(), $events);
+        $aggregate->clearEvents();
+        
+        $this->projector->project($events);
+    }
+    
+    public function byId(AggregateId $id)
+    {
+        return RealAggregateRoot::reconstitute($this->eventStore->getEventsFor($id);
+    }
+}
+``` 
+
+Implementation of an event store - also infrastructure layer (on redis example)
+```php
+class EventStore
+{
+    private $redis, $serializer;
+    public function __construct($redis, $serializer) { ... }
+    
+    public function append(EventStream $eventStream)
+    {
+        foreach ($eventsStream as $event) {
+            $data = $this->serializer->serialize($event, 'json');
+        }
+        
+        $date = (new DateTimeImmutable())->format('YmdHis');
+        
+        $this->redist->rpush(
+            'events:' . $event->getAggregateId(),
+            $this->serializer->serialize([
+                'type' => get_class($event),
+                'created_on' => $date,
+                'data' => $data
+            ], 'json')
+        );
+    }
+    
+    public function getEventsFor($id)
+    {
+        $serializedEvents = $this->redis-lrange('events:' . $id, 0, -1);
+    
+        $eventStream = [];
+        $foreach($seriailzedEvents as $e) {
+            $eventData = $this->serilizer->deserialize($serializedEvent, 'array', 'json');
+            
+            $eventStream[] = $this->serializer->deserialize($eventData['data'], $eventData['type'], 'json');
+        }
+        
+        return new EventStream($id, $eventStream);
+    }
+}
+```
+Implementation of an snapshot repository
+```php
+class SnapshotRepository
+{
+    public function byId($id)
+    {
+        $key = 'snapshots:' . $id;
+        $metadata = $this->serializer->unserialize($this->redis->get($key));
+        
+        if (null === $metadata) {
+            return;
+        }
+        
+        return new Snapshot(
+            $metadata['version'],
+            $this->serializer->unserialize(
+                $metadata['snapshot']['data'],
+                $metadata['snapshot'['type'],
+                'json'
+            )
+        );
+    }
+    
+    public function save($id, Snapshot $snapshot)
+    {
+        $key = 'snapshots:' . $id;
+        $aggregate = $snapshot->aggregate();
+        
+        $snapshot = [
+            'version' => $snapshot->version(),
+            'snapshot' => [
+                'type' => get_class($aggregate),
+                'data' => $this->serializer->serialize($aggreagte, 'json')
+            ]
+        ];
+        
+        $this->redis->set($key, $snapshot);
+    }
+    
+}
+```
+Implementation a snapshot strategy for given n events
+```php
+class EventStoreAggregateRepository implements AggregateRepository
+{
+    ...
+    
+    public function byId(AggregateId $id)
+    {
+        $snapshot = $this->snapshotRepository->byId($id);
+        
+        if (null === $snapshot) {
+            return RealAggregateRoot::reconstitute($this->eventStore->getEventsFrom($id);
+        }
+        
+        $aggregate = $snapshot->aggregate();
+        $aggregate->replay($this->eventStore->fromVersion($id, $snapshot->version()));
+        
+        return $aggregate;
+    }
+    
+    public function save(ConcreteAggregate $aggregate)
+    {
+        $id = $aggregate->id();
+        $events = $aggregate->recordedEvents();
+        $post->clearEvents();
+        $this->eventStore->append(new EventStream($aggregate->id(), $events));
+        $countOfEvents = $this->eventStore->countEventsFor($id);
+        $version = $countOfEvents / 100;
+        
+        if (!$this->snapshotRepository->has($post->id(), $version) {
+            $this->snapshotRepository->save($id, new Snapshot($post, $version));
+        }
+        
+        $this->projector->project($events);
+    }
+}
+
+```
+
+#### Summarization and conclusion
+- event sourcing is made from:
+    - aggregate root that has a method to reconstitute aggregate state from given events
+    - repository (that lays on infrastructure layer) within which injected is Projector and EventStore
+    - event store
+    - projector (which originates from cqrs)
+    - snapshot (repository) - not necessary needed but they increase performance
+- event sourcing properties:
+    - you can store all aggregate changes within one table
+    - each model state change is stored as **INSERTed** event on database
+    - there is no need for ORM
+- event store is made from two methods:
+    - append(EventStream $es) - "**inserts**"\* events to the database
+    - getEventsFor($id) - returns all
+- snapshot repository:
+    - its is a serialized version of an aggregate at given time or n events occured
+    - you can store snapshots in the same database
+- in my opinion there is no need for relational database in this approach, moreover relation database would be
+pain in the ass
+- i wonder how to handle "database migrations" - if there is business need for another event type and this code goes
+to production you cannot "undo" code to previous version because that code might not be able to handle already stored
+events in database. So you need to "undo" the database itself and loose all the data. Am I correct? 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ## Hexagonal Architecture (ports and adapters) - exposes requirements such as blogs, static pages, and so on
   
@@ -210,3 +404,7 @@ From top to bottom (higher abstraction to lower)
 ## Dependency Inversion Principle (DIP)
 High-level modules hould not depend on low-level modules.
 Both should depend on abstractions. Abstractions should not depend on details. Details should depend on abstractions.
+
+___
+\* - *inserts* - is in quotes because it doesn't need to be relational database, but i wanted to point out that
+in this apporach you cannot do other operation on database other than add or create new record or document
