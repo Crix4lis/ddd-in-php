@@ -17,3 +17,5 @@ written by *CARLOS BUENOSVINOS*, *CHRISTIAN SORONELLAS* and *KEYVAN AKBARY*:
 ### TODO
 - read more about streams
 - read more about redis and elasticsearch
+- read about surrogate properties in a context to database
+
