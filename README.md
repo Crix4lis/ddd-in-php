@@ -14,8 +14,20 @@ written by *CARLOS BUENOSVINOS*, *CHRISTIAN SORONELLAS* and *KEYVAN AKBARY*:
 - [Applying Domain Driven Design Patterns by Jimmy Nilsson](https://www.amazon.com/Applying-Domain-Driven-Design-Patterns-Examples/dp/0321268202)<br>
 - [Introducing Eventstorming by Alberto Brandolini](https://leanpub.com/introducing_eventstorming)<br>
 
+### Notes
+- Doctrine is an implementation of a `Data Mapper pattern`
+- I always wondered where validation (assertion) should lay - **ASSERTION SHOULD BE ENCLOSED WITHIN PRIVATE SETTER**
+(unless that small ValueObject - don't need setter imho, then)
+- **Public** VS **private constructor** (**named** constructor):
+    - **public constructor**: if object is created with all needed (necessary) properties provided from outside the class
+    - **private constructor and public static named constructor**: if object is created without provided all necessary
+    data (it generates it)
+- If **other bounded context** generates ID, necessary is **Event Driven architecture**
+
 ### TODO
 - read more about streams
 - read more about redis and elasticsearch
 - read about surrogate properties in a context to database
-
+- read about active records (don't like it, but still I need to know more)
+- read about `Data Mapper patter`
+- read about `Unit of Work pattern`
