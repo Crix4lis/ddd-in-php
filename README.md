@@ -22,7 +22,10 @@ written by *CARLOS BUENOSVINOS*, *CHRISTIAN SORONELLAS* and *KEYVAN AKBARY*:
     - **public constructor**: if object is created with all needed (necessary) properties provided from outside the class
     - **private constructor and public static named constructor**: if object is created without provided all necessary
     data (it generates it)
+    - addictionally it allows (static constructor) to implement constructor method without throwing an event, and in business specific
+    method that is named static constructor you can **publish events**
 - If **other bounded context** generates ID, necessary is **Event Driven architecture**
+- Constructing an object from plain data such as an array is called hydratation
 
 ### TODO
 - read more about streams
@@ -31,3 +34,4 @@ written by *CARLOS BUENOSVINOS*, *CHRISTIAN SORONELLAS* and *KEYVAN AKBARY*:
 - read about active records (don't like it, but still I need to know more)
 - read about `Data Mapper patter`
 - read about `Unit of Work pattern`
+- **read more about messaging (not publishing itself) events!**
