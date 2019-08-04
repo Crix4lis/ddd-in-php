@@ -13,6 +13,7 @@ written by *CARLOS BUENOSVINOS*, *CHRISTIAN SORONELLAS* and *KEYVAN AKBARY*:
 ## Mentioned books (I decided to point out)
 - [Applying Domain Driven Design Patterns by Jimmy Nilsson](https://www.amazon.com/Applying-Domain-Driven-Design-Patterns-Examples/dp/0321268202)<br>
 - [Introducing Eventstorming by Alberto Brandolini](https://leanpub.com/introducing_eventstorming)<br>
+- [NoSQL Distilled: A Brief Guide to the Emerging World of Polyglot Persistence by Pramod J. Sadalag]()<br> 
 
 ### Notes
 - Doctrine is an implementation of a `Data Mapper pattern`
@@ -26,6 +27,7 @@ written by *CARLOS BUENOSVINOS*, *CHRISTIAN SORONELLAS* and *KEYVAN AKBARY*:
     method that is named static constructor you can **publish events**
 - If **other bounded context** generates ID, necessary is **Event Driven architecture**
 - Constructing an object from plain data such as an array is called hydratation
+- "Factories help us keeping the business invariants" [page 177] - read more about factories
 
 ### TODO
 - read more about streams
@@ -35,3 +37,5 @@ written by *CARLOS BUENOSVINOS*, *CHRISTIAN SORONELLAS* and *KEYVAN AKBARY*:
 - read about `Data Mapper patter`
 - read about `Unit of Work pattern`
 - **read more about messaging (not publishing itself) events!**
+- read about invariants in context of aggregates
+- read about database mechanism pessimistic and optimistic concurrency control
