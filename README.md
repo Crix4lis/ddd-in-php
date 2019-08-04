@@ -13,7 +13,23 @@ written by *CARLOS BUENOSVINOS*, *CHRISTIAN SORONELLAS* and *KEYVAN AKBARY*:
 ## Mentioned books (I decided to point out)
 - [Applying Domain Driven Design Patterns by Jimmy Nilsson](https://www.amazon.com/Applying-Domain-Driven-Design-Patterns-Examples/dp/0321268202)<br>
 - [Introducing Eventstorming by Alberto Brandolini](https://leanpub.com/introducing_eventstorming)<br>
-- [NoSQL Distilled: A Brief Guide to the Emerging World of Polyglot Persistence by Pramod J. Sadalag]()<br> 
+- [NoSQL Distilled: A Brief Guide to the Emerging World of Polyglot Persistence by Pramod J. Sadalag]()<br>
+
+
+## Entities and surrogate Id
+User contains $userId, $email, $password
+
+```php
+class DoctrineUser extends User
+{
+    private $surrogateUserId;
+    
+    public function __construct(UserId $userId, $email, $password) {
+        parent::__construct($userId, $email, $password);
+        $this->surrogateUserId = $user->id()
+    }
+}
+```
 
 ### Notes
 - Doctrine is an implementation of a `Data Mapper pattern`
