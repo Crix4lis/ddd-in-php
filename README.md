@@ -55,3 +55,4 @@ class DoctrineUser extends User
 - **read more about messaging (not publishing itself) events!**
 - read about invariants in context of aggregates
 - read about database mechanism pessimistic and optimistic concurrency control
+- read about data-structures, like Sets (repository is an implementation of set)
