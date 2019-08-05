@@ -44,6 +44,8 @@ class DoctrineUser extends User
 - If **other bounded context** generates ID, necessary is **Event Driven architecture**
 - Constructing an object from plain data such as an array is called hydratation
 - "Factories help us keeping the business invariants" [page 177] - read more about factories
+- Command buses and message systems are used outside the domain model!!! Domain model only published events
+but all the rest is handled in app layer or infrastructure layer!
 
 ### TODO
 - read more about streams
@@ -56,3 +58,4 @@ class DoctrineUser extends User
 - read about invariants in context of aggregates
 - read about database mechanism pessimistic and optimistic concurrency control
 - read about data-structures, like Sets (repository is an implementation of set)
+- read more about data transformers****
