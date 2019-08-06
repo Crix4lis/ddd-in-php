@@ -13,8 +13,10 @@ written by *CARLOS BUENOSVINOS*, *CHRISTIAN SORONELLAS* and *KEYVAN AKBARY*:
 ## Mentioned books (I decided to point out)
 - [Applying Domain Driven Design Patterns by Jimmy Nilsson](https://www.amazon.com/Applying-Domain-Driven-Design-Patterns-Examples/dp/0321268202)<br>
 - [Introducing Eventstorming by Alberto Brandolini](https://leanpub.com/introducing_eventstorming)<br>
-- [NoSQL Distilled: A Brief Guide to the Emerging World of Polyglot Persistence by Pramod J. Sadalag]()<br>
-
+- [NoSQL Distilled: A Brief Guide to the Emerging World of Polyglot Persistence by Pramod J. Sadalag](https://bigdata-ir.com/wp-content/uploads/2017/04/NoSQL-Distilled.pdf)<br>
+- [Patterns of Enterprise Application Architecture by Martin Fowler](https://www.amazon.com/Patterns-Enterprise-Application-Architecture-Martin-ebook/dp/B000OZ0NAI)<br>
+- [Enterprise Integration Patterns by Gregor Hohpe and Bobby Woolf](https://www.amazon.co.uk/Enterprise-Integration-Patterns-Designing-Addison-Wesley/dp/0321200683)<br>
+- [Building Microservices by Sam Newman](https://www.goodreads.com/book/show/22512931-building-microservices)
 
 ## Entities and surrogate Id
 User contains $userId, $email, $password
