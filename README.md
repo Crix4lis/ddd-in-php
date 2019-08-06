@@ -46,6 +46,8 @@ class DoctrineUser extends User
 - "Factories help us keeping the business invariants" [page 177] - read more about factories
 - Command buses and message systems are used outside the domain model!!! Domain model only published events
 but all the rest is handled in app layer or infrastructure layer!
+- "AsMartin Fowler said in the PoEAA book, the first law of distributed systems is always:Don’t distribute" ❤️
+- on message subscribes run commands to the domain using CommandBus (message subscribers are on infrastructure)
 
 ### TODO
 - read more about streams
@@ -59,3 +61,4 @@ but all the rest is handled in app layer or infrastructure layer!
 - read about database mechanism pessimistic and optimistic concurrency control
 - read about data-structures, like Sets (repository is an implementation of set)
 - read more about data transformers****
+- read about aggregates and bounded contexts, how does two different aggregate roots within single context cooperate
