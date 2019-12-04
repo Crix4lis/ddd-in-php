@@ -2,7 +2,7 @@
 >source repository: [ddd-in-php](https://github.com/Crix4lis/ddd-in-php)
 
 # ddd-in-php
-This repository is a study of a book [Domain-Driven Design in PHP](http://xeroxmobileprint.net/DiscoveryTable/test/folder1/Domain-Driven_Design_in_PHP.pdf)
+This repository is a study of a book [Domain-Driven Design in PHP](https://www.amazon.com/Domain-Driven-Design-PHP-Carlos-Buenosvinos-ebook/dp/B06ZYRPHMC/ref=sr_1_1?keywords=Domain-Driven+Design+in+PHP&qid=1575460294&sr=8-1)
 written by *CARLOS BUENOSVINOS*, *CHRISTIAN SORONELLAS* and *KEYVAN AKBARY*:
 
 ![DOMAIIN-DRIVEN DESIGN IN PHP COVER](https://images.gr-assets.com/books/1537792285l/32284709.jpg)
